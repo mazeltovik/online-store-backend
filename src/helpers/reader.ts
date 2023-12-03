@@ -31,7 +31,16 @@
 
 // // Возвращает массив из аргумента строки, содержит ключ для обьекта и его свойство.
 // function handleLine(line: string) {
-//   const arr = line.trim().replace(/"/g, '').slice(0, -1).split(':');
+//   let arr: string[] = [];
+//   const pureLine = line.trim().replace(/"/g, '').slice(0, -1);
+//   if (pureLine.includes('imageUrl')) {
+//     const index = pureLine.indexOf(':');
+//     const imgKey = pureLine.slice(0, index);
+//     const imgValue = pureLine.slice(index + 1);
+//     arr = [imgKey, imgValue];
+//   } else {
+//     arr = pureLine.split(':');
+//   }
 //   const [key, value] = arr;
 //   return value ? [key, value.trim()] : [key];
 // }
