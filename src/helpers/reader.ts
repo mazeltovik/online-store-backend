@@ -1,9 +1,18 @@
 import { join } from 'path';
 import { open } from 'node:fs/promises';
-import { v4 as uuidv4 } from 'uuid';
 import { PrismaClient } from '@prisma/client';
+import randomInt from './randomInt';
 
 const prisma = new PrismaClient();
+
+type Color = {
+  productId: string;
+  clr_ff0000: number;
+  clr_00ff00: number;
+  clr_0000ff: number;
+  clr_000: number;
+  clr_ffb900: number;
+};
 
 type Product = {
   id: string;
@@ -11,7 +20,6 @@ type Product = {
   price: number;
   imageUrl: string;
   featured: boolean;
-  colors: string[];
   company: string;
   description: string;
   category: string;
@@ -27,6 +35,7 @@ async function write() {
       loopLogic(product, line);
     }
   }
+  process.stdout.write(`\x1b[33mCreated Create Database \n`);
 }
 
 // Возвращает массив из аргумента строки, содержит ключ для обьекта и его свойство.
@@ -51,7 +60,6 @@ async function createProduct(product: Partial<Product>) {
     name: '',
     price: 0,
     imageUrl: '',
-    colors: [],
     company: '',
     description: '',
     category: '',
@@ -66,12 +74,7 @@ async function createProduct(product: Partial<Product>) {
 function loopLogic(product: Partial<Product>, line: string) {
   const keyAndValue = handleLine(line);
   const [key, value] = keyAndValue;
-  if (key == 'id') {
-    product[key] = uuidv4();
-  } else if (key == 'colors') {
-    const colorsArr = value.split(',');
-    product[key] = colorsArr;
-  } else if (key == 'shipping') {
+  if (key == 'shipping') {
     if (value == 'false') {
       product[key] = false;
     } else {
@@ -93,4 +96,52 @@ function loopLogic(product: Partial<Product>, line: string) {
   }
 }
 
-write();
+async function writeColors() {
+  const path = join(process.cwd(), '/src', 'static', 'colors.txt');
+  const file = await open(path);
+  const colors: Partial<Color> = {};
+  for await (const line of file.readLines()) {
+    if (!line.includes('[') && !line.includes('{') && !line.includes(']')) {
+      loopColorLogic(colors, line);
+    }
+  }
+  process.stdout.write(`\x1b[33mCreated Create Colors \n`);
+}
+
+function loopColorLogic(colors: Partial<Color>, line: string) {
+  const keyAndValue = handleLine(line);
+  const [key, value] = keyAndValue;
+  if (key.includes('clr')) {
+    colors[key] = randomInt(1, 5);
+  } else if (key == '}') {
+    createColor(colors);
+    colors = {};
+  } else {
+    colors[key] = value;
+  }
+}
+
+async function createColor(colors: Partial<Color>) {
+  const newColor: Color = {
+    productId: '',
+    clr_ff0000: 0,
+    clr_00ff00: 0,
+    clr_0000ff: 0,
+    clr_000: 0,
+    clr_ffb900: 0,
+  };
+  await prisma.color.create({
+    data: Object.assign(newColor, colors),
+  });
+}
+
+// write()
+writeColors();
+
+// async function fillDB(){
+//   const funcs = [write,writeColors];
+//   for await(let func of funcs){
+//     func();
+//   }
+// }
+// fillDB();

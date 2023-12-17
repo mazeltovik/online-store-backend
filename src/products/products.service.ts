@@ -12,17 +12,23 @@ export class ProductsService {
         return this.prisma.products.findMany({
           skip: skipValue,
           take: 3,
+          include: { colors: true },
         });
       } else {
         return this.prisma.products.findMany({
+          skip: 0,
           take: Number(limit),
+          include: { colors: true },
         });
       }
     }
-    return this.prisma.products.findMany({});
+    return this.prisma.products.findMany({ include: { colors: true } });
   }
   async findOne(id: string) {
-    const product = await this.prisma.products.findFirst({ where: { id } });
+    const product = await this.prisma.products.findFirst({
+      where: { id },
+      include: { colors: true },
+    });
     if (product) {
       return product;
     } else {

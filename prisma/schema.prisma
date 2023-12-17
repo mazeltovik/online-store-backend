@@ -17,9 +17,20 @@ model Products {
   price Int
   imageUrl String
   featured Boolean
-  colors String[]
+  colors Color?
   company String
   description String
   category String
   shipping Boolean
+}
+
+model Color {
+  id Int @id @default(autoincrement())
+  product  Products @relation(fields: [productId], references: [id])
+  productId String  @unique
+  clr_ff0000 Int
+  clr_00ff00 Int
+  clr_0000ff Int
+  clr_000 Int
+  clr_ffb900 Int
 }
