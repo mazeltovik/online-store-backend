@@ -135,13 +135,5 @@ async function createColor(colors: Partial<Color>) {
   });
 }
 
-// write()
-writeColors();
-
-// async function fillDB(){
-//   const funcs = [write,writeColors];
-//   for await(let func of funcs){
-//     func();
-//   }
-// }
-// fillDB();
+// write();
+// writeColors();
