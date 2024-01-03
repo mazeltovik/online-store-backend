@@ -15,11 +15,10 @@ export class AuthValidationPipe implements PipeTransform<any> {
     }
     const object = plainToInstance(metatype, value);
     const errors = await validate(object);
-    if(errors.length > 0){
+    console.log(errors);
+    if (errors.length > 0) {
       const [firstErr] = Object.values(errors[0].constraints);
-      throw new BadRequestException(
-        firstErr,
-      );
+      throw new BadRequestException(firstErr);
     }
     return value;
   }
