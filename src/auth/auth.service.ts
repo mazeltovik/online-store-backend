@@ -8,7 +8,7 @@ import { PrismaService } from 'src/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcryptjs';
 // import { JwtService } from '@nestjs/jwt';
-import { userWithoutPassword } from '../helpers/userWithoutPassword';
+// import { userWithoutPassword } from '../helpers/userWithoutPassword';
 import { CreateUserDto } from './dto/create-user.dto';
 // import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -31,8 +31,8 @@ export class AuthService {
         name,
         password: hash,
       };
-      const createdUser = await this.prisma.user.create({ data: user });
-      return userWithoutPassword(createdUser);
+      await this.prisma.user.create({ data: user });
+      return {statusCode:200,message:'User created'}
     }
   }
 }
