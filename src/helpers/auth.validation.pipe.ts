@@ -15,9 +15,10 @@ export class AuthValidationPipe implements PipeTransform<any> {
     }
     const object = plainToInstance(metatype, value);
     const errors = await validate(object);
-    if (errors.length > 0) {
+    if(errors.length > 0){
+      const [firstErr] = Object.values(errors[0].constraints);
       throw new BadRequestException(
-        'Request body does not contain required fields',
+        firstErr,
       );
     }
     return value;
