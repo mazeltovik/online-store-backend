@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from 'src/decorators/publicPath';
@@ -13,6 +13,16 @@ export class AuthController {
   signUp(@Body() signUpDto: CreateUserDto) {
     try {
       return this.authService.signUp(signUpDto);
+    } catch (err) {
+      throw err;
+    }
+  }
+  @Public()
+  @HttpCode(200)
+  @Get('signup')
+  getUser() {
+    try {
+      return this.authService.getUser();
     } catch (err) {
       throw err;
     }

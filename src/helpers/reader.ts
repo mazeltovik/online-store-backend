@@ -36,7 +36,12 @@ async function write() {
     }
   }
   process.stdout.write(`\x1b[33mCreated Create Database \n`);
+  await new Promise((resolve)=>{
+    setTimeout(()=>resolve(next()),4000);
+  })
 }
+
+
 
 // Возвращает массив из аргумента строки, содержит ключ для обьекта и его свойство.
 function handleLine(line: string) {
@@ -106,6 +111,7 @@ async function writeColors() {
     }
   }
   process.stdout.write(`\x1b[33mCreated Create Colors \n`);
+  // Promise.resolve(next());
 }
 
 function loopColorLogic(colors: Partial<Color>, line: string) {
@@ -134,6 +140,20 @@ async function createColor(colors: Partial<Color>) {
     data: Object.assign(newColor, colors),
   });
 }
+
+const tasks = [
+  write,
+  writeColors
+]
+
+function next(){
+  const currentTask = tasks.shift();
+  if(currentTask){
+    currentTask();
+  }
+}
+
+next();
 
 // write();
 // writeColors();

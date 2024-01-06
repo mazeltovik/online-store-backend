@@ -18,6 +18,15 @@ model User {
   version Int // integer number, increments on update
   createdAt DateTime? @default(now()) // timestamp of creation
   updatedAt DateTime? @default(now())
+  cart Cart[]
+}
+
+model Cart{
+  id Int @id @default(autoincrement())
+  user  User @relation(fields: [userId], references: [id])
+  userId String
+  product  Products @relation(fields: [productId], references: [id])
+  productId String
 }
 
 
@@ -32,6 +41,7 @@ model Products {
   description String
   category String
   shipping Boolean
+  cart Cart[]
 }
 
 model Color {
