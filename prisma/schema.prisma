@@ -34,6 +34,8 @@ model Products {
   id String @unique // uuid v4
   name String
   price Int
+  rating Int
+  reviews Int
   imageUrl String
   featured Boolean
   colors Color?

@@ -18,6 +18,8 @@ type Product = {
   id: string;
   name: string;
   price: number;
+  rating: number;
+  reviews: number;
   imageUrl: string;
   featured: boolean;
   company: string;
@@ -36,12 +38,10 @@ async function write() {
     }
   }
   process.stdout.write(`\x1b[33mCreated Create Database \n`);
-  await new Promise((resolve)=>{
-    setTimeout(()=>resolve(next()),4000);
-  })
+  await new Promise((resolve) => {
+    setTimeout(() => resolve(next()), 4000);
+  });
 }
-
-
 
 // Возвращает массив из аргумента строки, содержит ключ для обьекта и его свойство.
 function handleLine(line: string) {
@@ -64,6 +64,8 @@ async function createProduct(product: Partial<Product>) {
     id: '',
     name: '',
     price: 0,
+    rating: 5,
+    reviews: 0,
     imageUrl: '',
     company: '',
     description: '',
@@ -91,7 +93,7 @@ function loopLogic(product: Partial<Product>, line: string) {
     } else {
       product[key] = true;
     }
-  } else if (key == 'price') {
+  } else if (key == 'price' || key == 'rating' || key == 'reviews') {
     product[key] = Number(value);
   } else if (key == '}') {
     createProduct(product);
@@ -141,14 +143,11 @@ async function createColor(colors: Partial<Color>) {
   });
 }
 
-const tasks = [
-  write,
-  writeColors
-]
+const tasks = [write, writeColors];
 
-function next(){
+function next() {
   const currentTask = tasks.shift();
-  if(currentTask){
+  if (currentTask) {
     currentTask();
   }
 }
