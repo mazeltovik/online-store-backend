@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import randomInt from 'src/helpers/randomInt';
-
 @Injectable()
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
@@ -27,7 +26,17 @@ export class ProductsService {
   async findOne(id: string) {
     const product = await this.prisma.products.findFirst({
       where: { id },
-      include: { colors: true },
+      include: {
+        colors: {
+          select: {
+            clr_000: true,
+            clr_0000ff: true,
+            clr_00ff00: true,
+            clr_ff0000: true,
+            clr_ffb900: true,
+          },
+        },
+      },
     });
     if (product) {
       return product;
