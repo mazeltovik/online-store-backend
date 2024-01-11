@@ -123,26 +123,42 @@ export class UserService {
     const shouldUpdateColor = await this.prisma.color.findFirst({
       where: { productId },
     });
+    const difference = shouldUpdateColor[color] - amount;
+    if(difference == 0){
+      this.updateAvailableColors(productId,color);
+    }
     const obj = Object.fromEntries([
-      [color, shouldUpdateColor[color] - amount],
+      [color, difference],
     ]);
     await this.prisma.color.update({
       where: { productId },
       data: obj,
-    });
+    })
   }
 
-  async setColor(productId: string, amount: number) {
-    try {
-      await this.prisma.color.update({
-        where: { productId },
-        data: {
-          clr_0000ff: amount,
-        },
-      });
-    } catch {
-      throw new ConflictException('You cant add more products, then exist');
-    }
+  // async setColor(productId: string, amount: number) {
+  //   try {
+  //     await this.prisma.color.update({
+  //       where: { productId },
+  //       data: {
+  //         clr_0000ff: amount,
+  //       },
+  //     });
+  //   } catch {
+  //     throw new ConflictException('You cant add more products, then exist');
+  //   }
+  // }
+
+  async updateAvailableColors(productId: string,color:string){
+    const index = color.indexOf('_') + 1;
+    const clearColor = `#${color.slice(index)}`;
+    let {availableColors} = await this.prisma.products.findFirst({
+      where:{id:productId}
+    })
+    availableColors = availableColors.filter(color=>color!=clearColor);
+    await this.prisma.products.update({where:{id:productId},data:{
+      availableColors
+    }})
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
