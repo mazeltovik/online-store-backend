@@ -67,7 +67,7 @@ async function createProduct(product: Partial<Product>) {
     price: 0,
     rating: 5,
     reviews: 0,
-    availableColors:[],
+    availableColors: [],
     imageUrl: '',
     company: '',
     description: '',
@@ -95,10 +95,9 @@ function loopLogic(product: Partial<Product>, line: string) {
     } else {
       product[key] = true;
     }
-  } else if(key == 'availableColors'){
+  } else if (key == 'availableColors') {
     product[key] = value.split(',').sort();
-  }
-  else if (key == 'price' || key == 'rating' || key == 'reviews') {
+  } else if (key == 'price' || key == 'rating' || key == 'reviews') {
     product[key] = Number(value);
   } else if (key == '}') {
     createProduct(product);
