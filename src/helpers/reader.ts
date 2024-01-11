@@ -20,6 +20,7 @@ type Product = {
   price: number;
   rating: number;
   reviews: number;
+  availableColors: string[];
   imageUrl: string;
   featured: boolean;
   company: string;
@@ -66,6 +67,7 @@ async function createProduct(product: Partial<Product>) {
     price: 0,
     rating: 5,
     reviews: 0,
+    availableColors:[],
     imageUrl: '',
     company: '',
     description: '',
@@ -93,7 +95,10 @@ function loopLogic(product: Partial<Product>, line: string) {
     } else {
       product[key] = true;
     }
-  } else if (key == 'price' || key == 'rating' || key == 'reviews') {
+  } else if(key == 'availableColors'){
+    product[key] = value.split(',');
+  }
+  else if (key == 'price' || key == 'rating' || key == 'reviews') {
     product[key] = Number(value);
   } else if (key == '}') {
     createProduct(product);
