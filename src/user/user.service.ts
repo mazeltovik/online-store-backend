@@ -150,12 +150,10 @@ export class UserService {
   // }
 
   async updateAvailableColors(productId: string,color:string){
-    const index = color.indexOf('_') + 1;
-    const clearColor = `#${color.slice(index)}`;
     let {availableColors} = await this.prisma.products.findFirst({
       where:{id:productId}
     })
-    availableColors = availableColors.filter(color=>color!=clearColor);
+    availableColors = availableColors.filter(availableColor=>availableColor!=color);
     await this.prisma.products.update({where:{id:productId},data:{
       availableColors
     }})

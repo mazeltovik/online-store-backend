@@ -96,7 +96,7 @@ function loopLogic(product: Partial<Product>, line: string) {
       product[key] = true;
     }
   } else if(key == 'availableColors'){
-    product[key] = value.split(',');
+    product[key] = value.split(',').sort();
   }
   else if (key == 'price' || key == 'rating' || key == 'reviews') {
     product[key] = Number(value);
