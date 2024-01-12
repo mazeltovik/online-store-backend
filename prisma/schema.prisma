@@ -38,6 +38,7 @@ model Products {
   price Int
   rating Int
   reviews Int
+  totalRating Int
   availableColors String[]
   imageUrl String
   featured Boolean

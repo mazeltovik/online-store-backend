@@ -1,6 +1,16 @@
-import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { QueryKeys } from './entities/queryTypes';
+import { RatingDto } from './dto/rating-user.dto';
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -12,6 +22,25 @@ export class ProductsController {
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
       return this.productsService.findOne(id);
+    } catch (err) {
+      throw err;
+    }
+  }
+  @Get('rating/:id')
+  getRating(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+    try {
+      return this.productsService.getRating(id);
+    } catch (err) {
+      throw err;
+    }
+  }
+  @Put('rating/:id')
+  updateRating(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() updateRating: RatingDto,
+  ) {
+    try {
+      return this.productsService.updateRating(id, updateRating);
     } catch (err) {
       throw err;
     }
