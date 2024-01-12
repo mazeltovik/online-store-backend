@@ -45,7 +45,6 @@ export class ProductsService {
       throw new NotFoundException('Product was not found.');
     }
   }
-  
 
   async getRating(id: string) {
     const rating = this.prisma.products.findFirst({
