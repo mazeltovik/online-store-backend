@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { AddItemToCartDto } from './dto/add-item-to-cart.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { QueryKeys } from './entities/user.entity';
 
 type Colors =
   | 'clr_ff0000'
@@ -27,7 +28,7 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  async getUserCart(id: string) {
+  async getUserCart(id: string, { amount }: QueryKeys) {
     const cart = await this.prisma.cart.findMany({
       where: {
         userId: id,
@@ -43,7 +44,7 @@ export class UserService {
       },
     });
     if (cart) {
-      return cart;
+      return amount ? { amount: cart.length } : cart;
     } else {
       throw new NotFoundException('Cart was not found.');
     }

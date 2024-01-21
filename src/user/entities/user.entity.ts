@@ -1,1 +1,3 @@
-export class User {}
+export type QueryKeys = {
+  amount: boolean;
+};

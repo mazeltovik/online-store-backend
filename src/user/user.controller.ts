@@ -8,11 +8,13 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpCode,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AddItemToCartDto } from './dto/add-item-to-cart.dto';
+import { QueryKeys } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -30,9 +32,12 @@ export class UserController {
 
   @Get('cart/:id')
   @HttpCode(200)
-  getUserCart(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  getUserCart(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Query() query: QueryKeys,
+  ) {
     try {
-      return this.userService.getUserCart(id);
+      return this.userService.getUserCart(id, query);
     } catch (err) {
       throw err;
     }
