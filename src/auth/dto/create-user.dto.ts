@@ -12,7 +12,6 @@ import { MatchSpacePattern } from 'src/helpers/authPatterns/matchSpacePattern';
 import { MatchLowerCasePattern } from 'src/helpers/authPatterns/matchLowerCasePattern';
 import { MatchUpperCasePattern } from 'src/helpers/authPatterns/matchUpperCasePattern';
 import { MatchDigitPattern } from 'src/helpers/authPatterns/matchDigitPattern';
-import { MatchSpecialSymbol } from 'src/helpers/authPatterns/matchSpecialSymbol';
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
@@ -38,6 +37,5 @@ export class CreateUserDto {
   @MatchLowerCasePattern({ message: 'Password should have a-z characters' })
   @MatchUpperCasePattern({ message: 'Password should have A-Z characters' })
   @MatchDigitPattern({ message: 'Password should have more than one digit' })
-  @MatchSpecialSymbol({ message: 'Password should have one special symbol' })
   password: string;
 }
