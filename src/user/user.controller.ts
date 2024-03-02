@@ -9,11 +9,13 @@ import {
   ParseUUIDPipe,
   HttpCode,
   Query,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AddItemToCartDto } from './dto/add-item-to-cart.dto';
+import { RemoveFromCartDto } from './dto/remove-from-cart.dto';
 import { QueryKeys } from './entities/user.entity';
 
 @Controller('user')
@@ -61,8 +63,16 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Put('cart/:id')
+  @HttpCode(200)
+  removeFromCart(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() removingItems: RemoveFromCartDto,
+  ) {
+    try {
+      return this.userService.removeFromCart(id, removingItems);
+    } catch (err) {
+      throw err;
+    }
   }
 }

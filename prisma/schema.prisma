@@ -42,7 +42,7 @@ model Products {
   availableColors String[]
   imageUrl String
   featured Boolean
-  colors Color?
+  colors Color[]
   company String
   description String
   category String

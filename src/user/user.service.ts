@@ -9,6 +9,7 @@ import { PrismaService } from 'src/prisma.service';
 import { AddItemToCartDto } from './dto/add-item-to-cart.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { QueryKeys } from './entities/user.entity';
+import { RemoveFromCartDto, RemovingItemDto } from './dto/remove-from-cart.dto';
 
 type Colors =
   | 'clr_ff0000'
@@ -39,6 +40,8 @@ export class UserService {
             name: true,
             price: true,
             shipping: true,
+            imageUrl: true,
+            colors: true,
           },
         },
       },
@@ -154,7 +157,75 @@ export class UserService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async removeFromCart(id: string, { removingItems }: RemoveFromCartDto) {
+    const isExistUser = await this.checkExistingUser(id);
+    if (isExistUser) {
+      for (const item of removingItems) {
+        const isExistCart = await this.checkExistingCart(item.id);
+        const isExistProduct = await this.checkExistingProduct(item.productId);
+        if (isExistCart && isExistProduct) {
+          this.removeItem(item.id);
+          this.updateAvailbaleColorAfterDelete(item.productId, item.color);
+          this.updateColorsAfterDelete(item);
+        } else {
+          if (!isExistCart) {
+            throw new NotFoundException('Cart was not found.');
+          } else {
+            throw new NotFoundException('Product was not found.');
+          }
+        }
+      }
+    } else {
+      throw new NotFoundException('User was not found.');
+    }
+  }
+  async checkExistingCart(id: string) {
+    const isExist = await this.prisma.cart.findFirst({
+      where: { id },
+    });
+    return isExist ? true : false;
+  }
+  async checkExistingUser(id: string) {
+    const isExist = await this.prisma.user.findFirst({
+      where: { id },
+    });
+    return isExist ? true : false;
+  }
+  async checkExistingProduct(id: string) {
+    const isExist = await this.prisma.products.findFirst({
+      where: { id },
+    });
+    return isExist ? true : false;
+  }
+  async removeItem(id: string) {
+    await this.prisma.cart.delete({
+      where: {
+        id,
+      },
+    });
+  }
+  async updateAvailbaleColorAfterDelete(id: string, color: string) {
+    const { availableColors } = await this.prisma.products.findFirst({
+      where: { id },
+    });
+    if (!availableColors.includes(color)) {
+      await this.prisma.products.update({
+        where: { id },
+        data: {
+          availableColors: [...availableColors, color],
+        },
+      });
+    }
+  }
+  async updateColorsAfterDelete({ productId, color, amount }: RemovingItemDto) {
+    const shouldUpdateColor = await this.prisma.color.findFirst({
+      where: { productId },
+    });
+    const difference = shouldUpdateColor[color] + amount;
+    const obj = Object.fromEntries([[color, difference]]);
+    await this.prisma.color.update({
+      where: { productId },
+      data: obj,
+    });
   }
 }
