@@ -1,3 +1,5 @@
 export type Obj = {
-  [key: string]: string;
+  name: string;
+  login: string;
+  password: string;
 };

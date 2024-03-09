@@ -18,11 +18,6 @@ import { QueryKeys } from './entities/user.entity';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
   @Get('cart/:id')
   @HttpCode(200)
   getUserCart(
