@@ -1,22 +1,9 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { AddItemToCartDto } from './dto/add-item-to-cart.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { QueryKeys } from './entities/user.entity';
 import { RemoveFromCartDto, RemovingItemDto } from './dto/remove-from-cart.dto';
-
-type Colors =
-  | 'clr_ff0000'
-  | 'clr_00ff00'
-  | 'clr_0000ff'
-  | 'clr_000'
-  | 'clr_ffb900';
 
 type Cart = {
   id: string;
@@ -29,13 +16,6 @@ type Cart = {
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
-
-  findAll() {
-    return `This action returns all user`;
-  }
 
   async getUserCart(id: string, { amount }: QueryKeys) {
     const cart = await this.prisma.cart.findMany({
@@ -62,13 +42,12 @@ export class UserService {
   }
 
   async addToCart(id: string, { productId, amount, color }: AddItemToCartDto) {
-    const isExist = await this.IsColorExist({ productId, amount, color });
+    const isExist = await this.IsColorExist({ productId, color });
     if (isExist) {
       const checkAmount = await this.checkAmount({ productId, amount, color });
       if (checkAmount) {
         const existingCart = await this.isCartExist(id, {
           productId,
-          amount,
           color,
         });
         if (existingCart) {
@@ -111,7 +90,7 @@ export class UserService {
 
   async isCartExist(
     id: string,
-    { productId, amount, color }: AddItemToCartDto,
+    { productId, color }: Omit<AddItemToCartDto, 'amount'>,
   ) {
     const existingCart = await this.prisma.cart.findFirst({
       where: {
@@ -143,7 +122,7 @@ export class UserService {
     };
   }
 
-  async IsColorExist({ productId, amount, color }: AddItemToCartDto) {
+  async IsColorExist({ productId, color }: Omit<AddItemToCartDto, 'amount'>) {
     const shouldUpdateColor = await this.prisma.color.findFirst({
       where: { productId },
     });
@@ -206,10 +185,6 @@ export class UserService {
         availableColors,
       },
     });
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
   }
 
   async removeFromCart(id: string, { removingItems }: RemoveFromCartDto) {

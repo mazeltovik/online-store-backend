@@ -1,11 +1,8 @@
-import {
-  registerDecorator,
-  ValidationOptions,
-  ValidationArguments,
-} from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
+import { Obj } from './objectType';
 
 export function MatchDomainPattern(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: Obj, propertyName: string) {
     registerDecorator({
       name: 'matchDomainPattern',
       target: object.constructor,
@@ -13,7 +10,7 @@ export function MatchDomainPattern(validationOptions?: ValidationOptions) {
       constraints: [],
       options: validationOptions,
       validator: {
-        validate(value: string, args: ValidationArguments) {
+        validate(value: string) {
           const regExp =
             /(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/g;
           return regExp.test(value);
