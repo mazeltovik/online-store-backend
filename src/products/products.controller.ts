@@ -10,13 +10,17 @@ import {
 import { ProductsService } from './products.service';
 import { QueryKeys } from './entities/queryTypes';
 import { RatingDto } from './dto/rating-user.dto';
+import { Public } from 'src/decorators/publicPath';
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
+
+  @Public()
   @Get()
   async findAll(@Query() query: QueryKeys) {
     return this.productsService.findAll(query);
   }
+
   @Get(':id')
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
@@ -25,6 +29,7 @@ export class ProductsController {
       throw err;
     }
   }
+
   @Get('rating/:id')
   getRating(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
