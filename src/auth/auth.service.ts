@@ -88,11 +88,11 @@ export class AuthService {
       refreshToken,
     };
   }
-  async refreshTokens(login: string, refreshToken: string | undefined) {
+  async refreshTokens(id: string, refreshToken: string | undefined) {
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is missing or invalid');
     }
-    const isLoginExist = await this.prisma.user.findFirst({ where: { login } });
+    const isLoginExist = await this.prisma.user.findFirst({ where: { id } });
     if (isLoginExist) {
       const payload = await this.jwtService.verifyAsync(refreshToken, {
         secret: jwtConstants.refreshSecret,
@@ -105,20 +105,6 @@ export class AuthService {
     }
   }
   async getUser(id: string) {
-    // const cart = await this.prisma.user.update({
-    //   where: { id },
-    //   data: {
-    //     cart: {
-    //       create: [
-    //         {
-    //           productId: '3ee24ac7-a7f9-4409-8444-412e3932704d',
-    //           amount:2,
-    //           color:'green'
-    //         },
-    //       ],
-    //     },
-    //   },
-    // });
     const user = await this.prisma.cart.findFirst({
       where: {
         userId: id,
@@ -138,24 +124,6 @@ export class AuthService {
         },
       },
     });
-    // const user = await this.prisma.user.findFirst({
-    //   where: { id: '724f83ab-d800-4cbe-aece-e1d7883240d0' },
-    //   include: {
-    //     cart: {
-    //       select: {
-    //         productId: true,
-    //         amount:true,
-    //         color:true,
-    //         product: {
-    //           select: {
-    //             name: true,
-    //             price: true,
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
     return user;
   }
 }

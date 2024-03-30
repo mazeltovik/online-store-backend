@@ -42,50 +42,38 @@ export class UserService {
   }
 
   async addToCart(id: string, { productId, amount, color }: AddItemToCartDto) {
-    const isExist = await this.IsColorExist({ productId, color });
-    if (isExist) {
-      const checkAmount = await this.checkAmount({ productId, amount, color });
-      if (checkAmount) {
-        const existingCart = await this.isCartExist(id, {
+    const isExistUser = await this.checkExistingUser(id);
+    if (isExistUser) {
+      const isExist = await this.IsColorExist({ productId, color });
+      if (isExist) {
+        const checkAmount = await this.checkAmount({
           productId,
+          amount,
           color,
         });
-        if (existingCart) {
-          await this.updateExistingCart(existingCart, {
+        if (checkAmount) {
+          const existingCart = await this.isCartExist(id, {
             productId,
-            amount,
             color,
           });
+          if (existingCart) {
+            await this.updateExistingCart(existingCart, {
+              productId,
+              amount,
+              color,
+            });
+          } else {
+            return this.setAmount(id, { productId, amount, color });
+          }
         } else {
-          return this.setAmount(id, { productId, amount, color });
+          throw new NotFoundException('Product doesnt contains this amount');
         }
       } else {
-        throw new NotFoundException('Product doesnt contains this amount');
+        throw new NotFoundException('Product or color doesnt exist');
       }
     } else {
-      throw new NotFoundException('Product or color doesnt exist');
+      throw new NotFoundException('User was not found.');
     }
-    // try {
-    //   await this.prisma.user.update({
-    //     where: { id },
-    //     data: {
-    //       cart: {
-    //         create: [
-    //           {
-    //             id:uuidv4(),
-    //             productId,
-    //             amount,
-    //             color
-    //           },
-    //         ],
-    //       },
-    //     },
-    //   });
-    //   this.updateColors({productId,amount,color})
-    //   return { statusCode: 200, message: 'Product has been added to your cart' };
-    // } catch{
-    //   throw new NotFoundException('Cart was not found');
-    // }
   }
 
   async isCartExist(

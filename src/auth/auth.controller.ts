@@ -6,8 +6,8 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  Req,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -41,21 +41,22 @@ export class AuthController {
     }
   }
 
-  // @UseGuards(RefreshTokenGuard)
-  // @Public()
-  // @Get('refresh')
-  // refreshTokens(@Req() req: Request) {
-  //   const userId = req.user['sub'];
-  //   console.log(userId);
-  //   // try {
-  //   //   const [type, refreshToken] = req.headers.authorization?.split(' ') ?? [];
-  //   //   return type === 'Bearer'
-  //   //     ? this.authService.refreshTokens(userId, refreshToken)
-  //   //     : this.authService.refreshTokens(userId, undefined);
-  //   // } catch (err) {
-  //   //   throw err;
-  //   // }
-  // }
+  @UseGuards(RefreshTokenGuard)
+  @Public()
+  @Get('refresh/:id')
+  refreshTokens(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Headers() headers,
+  ) {
+    try {
+      const [type, refreshToken] = headers.authorization?.split(' ') ?? [];
+      return type === 'Bearer'
+        ? this.authService.refreshTokens(id, refreshToken)
+        : this.authService.refreshTokens(id, undefined);
+    } catch (err) {
+      throw err;
+    }
+  }
 
   @Public()
   @HttpCode(200)
