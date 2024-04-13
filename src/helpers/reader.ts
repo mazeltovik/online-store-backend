@@ -5,7 +5,7 @@ import randomInt from './randomInt';
 
 const prisma = new PrismaClient();
 
-type Color = {
+export type Color = {
   productId: string;
   clr_ff0000: number;
   clr_00ff00: number;
@@ -14,7 +14,7 @@ type Color = {
   clr_ffb900: number;
 };
 
-type Product = {
+export type Product = {
   id: string;
   name: string;
   price: number;
