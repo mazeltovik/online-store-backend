@@ -22,11 +22,13 @@ model User {
 }
 
 model Cart{
-  id Int @id @default(autoincrement())
+  id String @id
   user  User @relation(fields: [userId], references: [id])
   userId String
   product  Products @relation(fields: [productId], references: [id])
   productId String
+  color String
+  amount Int
 }
 
 
@@ -34,9 +36,13 @@ model Products {
   id String @unique // uuid v4
   name String
   price Int
+  rating Int
+  reviews Int
+  totalRating Int
+  availableColors String[]
   imageUrl String
   featured Boolean
-  colors Color?
+  colors Color[]
   company String
   description String
   category String
@@ -45,7 +51,6 @@ model Products {
 }
 
 model Color {
-  id Int @id @default(autoincrement())
   product  Products @relation(fields: [productId], references: [id])
   productId String  @unique
   clr_ff0000 Int

@@ -14,10 +14,24 @@ export class AuthValidationPipe implements PipeTransform<any> {
       return value;
     }
     const object = plainToInstance(metatype, value);
-    const errors = await validate(object);
-    if (errors.length > 0) {
-      const [firstErr] = Object.values(errors[0].constraints);
-      throw new BadRequestException(firstErr);
+    if (
+      object.hasOwnProperty('removingItems') &&
+      Array.isArray(object.removingItems)
+    ) {
+      const { removingItems } = object;
+      for (let i = 0; i < removingItems.length; i++) {
+        const errors = await validate(removingItems[i]);
+        if (errors.length > 0) {
+          const [firstErr] = Object.values(errors[0].constraints);
+          throw new BadRequestException(firstErr);
+        }
+      }
+    } else {
+      const errors = await validate(object);
+      if (errors.length > 0) {
+        const [firstErr] = Object.values(errors[0].constraints);
+        throw new BadRequestException(firstErr);
+      }
     }
     return value;
   }

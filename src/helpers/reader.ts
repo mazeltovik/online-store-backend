@@ -5,7 +5,7 @@ import randomInt from './randomInt';
 
 const prisma = new PrismaClient();
 
-type Color = {
+export type Color = {
   productId: string;
   clr_ff0000: number;
   clr_00ff00: number;
@@ -14,10 +14,14 @@ type Color = {
   clr_ffb900: number;
 };
 
-type Product = {
+export type Product = {
   id: string;
   name: string;
   price: number;
+  rating: number;
+  reviews: number;
+  totalRating: number;
+  availableColors: string[];
   imageUrl: string;
   featured: boolean;
   company: string;
@@ -36,12 +40,10 @@ async function write() {
     }
   }
   process.stdout.write(`\x1b[33mCreated Create Database \n`);
-  await new Promise((resolve)=>{
-    setTimeout(()=>resolve(next()),4000);
-  })
+  await new Promise((resolve) => {
+    setTimeout(() => resolve(next()), 4000);
+  });
 }
-
-
 
 // Возвращает массив из аргумента строки, содержит ключ для обьекта и его свойство.
 function handleLine(line: string) {
@@ -64,6 +66,10 @@ async function createProduct(product: Partial<Product>) {
     id: '',
     name: '',
     price: 0,
+    rating: 5,
+    reviews: 0,
+    totalRating: 0,
+    availableColors: [],
     imageUrl: '',
     company: '',
     description: '',
@@ -91,7 +97,14 @@ function loopLogic(product: Partial<Product>, line: string) {
     } else {
       product[key] = true;
     }
-  } else if (key == 'price') {
+  } else if (key == 'availableColors') {
+    product[key] = value.split(',').sort();
+  } else if (
+    key == 'price' ||
+    key == 'rating' ||
+    key == 'reviews' ||
+    key == 'totalRating'
+  ) {
     product[key] = Number(value);
   } else if (key == '}') {
     createProduct(product);
@@ -141,14 +154,11 @@ async function createColor(colors: Partial<Color>) {
   });
 }
 
-const tasks = [
-  write,
-  writeColors
-]
+const tasks = [write, writeColors];
 
-function next(){
+function next() {
   const currentTask = tasks.shift();
-  if(currentTask){
+  if (currentTask) {
     currentTask();
   }
 }

@@ -1,5 +1,4 @@
 import {
-  IsAlpha,
   IsNotEmpty,
   IsString,
   MinLength,
@@ -12,13 +11,7 @@ import { MatchSpacePattern } from 'src/helpers/authPatterns/matchSpacePattern';
 import { MatchLowerCasePattern } from 'src/helpers/authPatterns/matchLowerCasePattern';
 import { MatchUpperCasePattern } from 'src/helpers/authPatterns/matchUpperCasePattern';
 import { MatchDigitPattern } from 'src/helpers/authPatterns/matchDigitPattern';
-export class CreateUserDto {
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(2)
-  @IsAlpha()
-  name: string;
-
+export class SignInUserDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)

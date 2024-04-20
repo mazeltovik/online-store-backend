@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import randomInt from 'src/helpers/randomInt';
-
+import { RatingDto } from './dto/rating-user.dto';
 @Injectable()
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
@@ -27,11 +27,57 @@ export class ProductsService {
   async findOne(id: string) {
     const product = await this.prisma.products.findFirst({
       where: { id },
-      include: { colors: true },
+      include: {
+        colors: {
+          select: {
+            clr_000: true,
+            clr_0000ff: true,
+            clr_00ff00: true,
+            clr_ff0000: true,
+            clr_ffb900: true,
+          },
+        },
+      },
     });
     if (product) {
       return product;
     } else {
+      throw new NotFoundException('Product was not found.');
+    }
+  }
+
+  async getRating(id: string) {
+    const rating = this.prisma.products.findFirst({
+      where: { id },
+      select: {
+        rating: true,
+        reviews: true,
+      },
+    });
+    if (rating) {
+      return rating;
+    } else {
+      throw new NotFoundException('Product was not found.');
+    }
+  }
+
+  async updateRating(id: string, { rating: newRating }: RatingDto) {
+    try {
+      let { rating, reviews, totalRating } =
+        await this.prisma.products.findFirst({ where: { id } });
+      totalRating += newRating;
+      reviews += 1;
+      rating = Math.round(totalRating / reviews);
+      await this.prisma.products.update({
+        where: { id },
+        data: {
+          totalRating,
+          reviews,
+          rating,
+        },
+      });
+      return { statusCode: 200, message: 'Rating has been updated' };
+    } catch {
       throw new NotFoundException('Product was not found.');
     }
   }
